@@ -31,7 +31,11 @@ node(""){
     }
     if (env.TAG_NAME != null){
 	stage("deploy"){
-	    sh 'kubectl apply -f /home/jenkins/manifests';
+	    workspace = sh(returnStdout: true, script: 'cat /home/jenkins/workspace.txt').trim()
+	    sh """
+	        cd /home/jenkins/qbec-app/ 
+		QBEC_YES=true qbec apply ${workspace} --vm:ext-str app_image_name=cr.yandex/${registry_id}/my-diploma-application --vm:ext-str app_image_tag=${env.TAG_NAME}
+	    """
 	}
     }
 }
